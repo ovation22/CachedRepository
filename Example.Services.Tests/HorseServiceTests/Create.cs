@@ -1,49 +1,75 @@
-using Example.Services.Tests.Factories;
+using Example.DTO.Horse;
 using Example.Services.Tests.Fakes;
 using Xunit;
 
 namespace Example.Services.Tests.HorseServiceTests
 {
     [Trait("Category", "HorseService")]
-    public class Get
+    public class Create
     {
         private readonly FakeHorseRepository _fakeRepository;
 
-        public Get()
+        public Create()
         {
             _fakeRepository = new FakeHorseRepository();
         }
 
-        [Theory]
-        [InlineData(1, "Ed")]
-        [InlineData(2, "War Admiral")]
-        [InlineData(3, "Suzie")]
-        public void ItReturnsHorseFromRepository(int id, string name)
+        [Fact]
+        public void ItCallsRepositoryAdd()
         {
             // Arrange
-            var expectedHorse = HorseFactory.Create(_fakeRepository, id, name).WithColor();
             var service = new HorseService(_fakeRepository);
 
             // Act
-            var actualHorse = service.Get(expectedHorse.Id);
+            service.Create(new HorseCreate());
 
             // Assert
-            Assert.True(_fakeRepository.GetCalled);
-            Assert.Equal(expectedHorse.Id, actualHorse.Id);
-            Assert.Equal(expectedHorse.Name, actualHorse.Name);
+            Assert.True(_fakeRepository.AddCalled);
         }
 
         [Fact]
-        public void GivenHorseNotFoundThenNullHorse()
+        public void ItCallsRepositorySave()
         {
             // Arrange
             var service = new HorseService(_fakeRepository);
 
             // Act
-            var actualHorse = service.Get(-1);
+            service.Create(new HorseCreate());
 
             // Assert
-            Assert.Null(actualHorse);
+            Assert.True(_fakeRepository.SaveCalled);
+        }
+
+        [Fact]
+        public void ItMapsHorse()
+        {
+            // Arrange
+            var service = new HorseService(_fakeRepository);
+            var horse = new HorseCreate
+            {
+                Name = "Test",
+                ColorId = 1,
+                Win = 2,
+                Place = 3,
+                Show = 4,
+                Starts = 5,
+                SireId = 6,
+                DamId = 7
+            };
+
+            // Act
+            service.Create(horse);
+            var actual = _fakeRepository.AddCalledWith;
+
+            // Assert
+            Assert.Equal(horse.Name, actual.Name);
+            Assert.Equal(horse.ColorId, actual.ColorId);
+            Assert.Equal(horse.Win, actual.RaceWins);
+            Assert.Equal(horse.Place, actual.RacePlace);
+            Assert.Equal(horse.Show, actual.RaceShow);
+            Assert.Equal(horse.Starts, actual.RaceStarts);
+            Assert.Equal(horse.SireId, actual.SireId);
+            Assert.Equal(horse.DamId, actual.DamId);
         }
     }
 }
