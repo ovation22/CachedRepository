@@ -31,5 +31,12 @@ namespace Example.Repositories
 
             return cacheEntry; 
         }
+
+        public new void Save()
+        {
+            _cache.Remove(_cacheKey);
+
+            base.Save();
+        }
     }
 }

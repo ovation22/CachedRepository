@@ -1,37 +1,37 @@
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
-using Xunit;
 using Example.API.Controllers;
-using Example.DTO.Horse;
+using Example.DTO.Color;
 using Example.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 
-namespace Example.API.Tests.HorseControllerTests
+namespace Example.API.Tests.ColorControllerTests
 {
-    [Collection("HorseController")]
-    [Trait("Category", "HorseController")]
+    [Collection("ColorController")]
+    [Trait("Category", "ColorController")]
     public class GetAll
     {
-        private readonly HorsesController _controller;
-        private static Mock<IHorseService> _horseServiceMock;
-        private readonly List<HorseSummary> _horses;
+        private readonly ColorsController _controller;
+        private static Mock<IColorService> _colorServiceMock;
+        private readonly List<ColorDetail> _colors;
 
         public GetAll()
         {
-            _horses = new List<HorseSummary>
+            _colors = new List<ColorDetail>
             {
-                new HorseSummary
+                new ColorDetail
                 {
                     Name = "test"
                 }
             };
 
-            _horseServiceMock = new Mock<IHorseService>();
-            _horseServiceMock.Setup(x => x.GetAll())
-                .Returns(() => _horses);
+            _colorServiceMock = new Mock<IColorService>();
+            _colorServiceMock.Setup(x => x.GetAll())
+                .Returns(() => _colors);
 
-            _controller = new HorsesController(_horseServiceMock.Object);
+            _controller = new ColorsController(_colorServiceMock.Object);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Example.API.Tests.HorseControllerTests
         }
 
         [Fact]
-        public void ItReturnsCollectionOfHorseSummary()
+        public void ItReturnsCollectionOfColorDetail()
         {
             // Arrange
             // Act
@@ -56,7 +56,7 @@ namespace Example.API.Tests.HorseControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Value);
-            Assert.IsAssignableFrom<IEnumerable<HorseSummary>>(result.Value);
+            Assert.IsAssignableFrom<IEnumerable<ColorDetail>>(result.Value);
         }
 
         [Fact]
@@ -67,11 +67,11 @@ namespace Example.API.Tests.HorseControllerTests
             _controller.Get();
 
             // Assert
-            _horseServiceMock.Verify(mock => mock.GetAll(), Times.Once());
+            _colorServiceMock.Verify(mock => mock.GetAll(), Times.Once());
         }
 
         [Fact]
-        public void GivenHorseServiceThenResultsReturned()
+        public void GivenColorServiceThenResultsReturned()
         {
             // Arrange
             // Act
@@ -79,8 +79,8 @@ namespace Example.API.Tests.HorseControllerTests
 
             // Assert
             Assert.NotNull(result);
-            var horses = ((IEnumerable<HorseSummary>) result.Value).ToList();
-            Assert.Equal(_horses, horses);
+            var colors = ((IEnumerable<ColorDetail>) result.Value).ToList();
+            Assert.Equal(_colors, colors);
         }
     }
 }
